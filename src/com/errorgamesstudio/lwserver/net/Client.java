@@ -1,0 +1,180 @@
+package com.errorgamesstudio.lwserver.net;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.Socket;
+
+import com.errorgamesstudio.lwserver.db.Datenbank;
+
+public class Client implements Runnable
+{
+	Socket socket;
+	InputStream inputStream;
+	OutputStream outputStream;
+	String placeholder = "%&§";
+	String username;
+	Thread clientThread = new Thread(this);
+	
+	public Client(Socket socket)
+	{
+		this.socket = socket;
+		try
+		{
+			inputStream = this.socket.getInputStream();
+			outputStream = this.socket.getOutputStream();
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		
+		clientThread.start();
+	}
+	
+	public void run()
+	{
+		boolean isActive = true;
+		BufferedReader inReader = new BufferedReader(new InputStreamReader(inputStream));
+		PrintWriter outWriter = new PrintWriter(outputStream);
+		while(isActive)
+		{
+			String input = "";
+			try
+			{
+				input = inReader.readLine();
+			} 
+			catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if(input != null)
+			{
+				System.out.println("Empfangen: " + input);
+				String parameter = input.substring(0, 19);
+				parameter = parameter.trim();
+				 switch(parameter)
+				 {
+				 	case "LOGIN":
+				 	{
+				 		String username = input.substring(20,39);
+				 		username = username.trim();
+				 		String password = input.substring(40,59);
+				 		password = password.trim();
+				 		System.out.println("Username=" + username);
+				 		System.out.println("Password=" + password);
+				 		break;
+				 	}	 	
+				 	
+				 	case "POST": // parameter[1] == Witz 
+				 	{
+				 		String witz = input.substring(20);
+				 		witz.replace((char)255, (char)39);
+				 		witz = witz.trim();
+				 		Datenbank.postNewJoke(username, witz);
+				 		break;
+				 	}
+				 	case "DOWNLOAD": //parameter[1] == category; parameter[2] == parameter(Top/Beliebte etc); parameter[3] == first Joke; parameter[4] == last Joke
+				 	{
+				 		String category = input.substring(20, 39);
+				 		category = category.trim();
+				 		String auswahl = input.substring(40, 59);
+				 		auswahl = auswahl.trim();
+				 		String firstJoke = auswahl.substring(60, 79);
+				 		firstJoke = firstJoke.trim();
+				 		String lastJoke = input.substring(80, 99);
+				 		lastJoke = lastJoke.trim();
+				 		Datenbank.getJokes(category, auswahl, Integer.parseInt(firstJoke), Integer.parseInt(lastJoke));
+				 		break;
+				 	}
+				 	case "COMMENT": // parameter[1] == jokeID; username; parameter[2] == commentText
+				 	{
+				 		String jokeID = input.substring(20, 39);
+				 		jokeID = jokeID.trim();
+				 		String commentText = input.substring(40, 59);
+				 		commentText = commentText.trim();
+				 		Datenbank.postComment(Integer.parseInt(jokeID), username, commentText);
+				 		break;
+				 	}
+				 	case "REGISTER":
+				 	{
+				 		String newUsername = input.substring(20,39);
+				 		newUsername = newUsername.trim();
+				 		String password = input.substring(40, 59);
+				 		password = password.trim();
+				 		
+				 		Datenbank.register(newUsername, password);
+				 		
+				 	}/*
+				 	case "REPORT":
+				 	{
+				 		Datenbank.report(username, parameter[1]);
+				 		break;
+				 	}
+				 	case "DELETE_JOKE":
+				 	{
+				 		Datenbank.deleteJoke(username, Integer.parseInt(parameter[1]));
+				 		break;
+				 	}
+				 	case "DELETE_COMMENT":
+				 	{
+				 		Datenbank.deleteComment(username, Integer.parseInt(parameter[1]));
+				 		break;
+				 	}
+				 	case "RATE_JOKE":
+				 	{
+				 		Datenbank.rateJoke(username, Integer.parseInt(parameter[1]));
+				 		break;
+				 	}
+				 	case "RATE_COMMENT":
+				 	{
+				 		Datenbank.rateComment(username, Integer.parseInt(parameter[1]), parameter[2]);
+				 		break;
+				 	}
+				 	case "ABO":
+				 	{
+				 		Datenbank.abo(username, parameter[1]);
+				 		break;
+				 	}
+				 	case "DEABO":
+				 	{
+				 		Datenbank.deabo(username, parameter[1]);
+				 		break;
+				 	}
+				 	case "PROFIL":
+				 	{
+				 		
+				 		break;
+				 	}
+				 	case "SEARCH":
+				 	{
+				 		
+				 		break;
+				 	}
+				 	case "LOAD_COMMENT":
+				 	{
+				 		
+				 		break;
+				 	}
+				 	case "CATEGORIES":
+				 	{
+				 		
+				 		break;
+				 	}*/
+				 }
+			}
+			else
+			{
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+}
