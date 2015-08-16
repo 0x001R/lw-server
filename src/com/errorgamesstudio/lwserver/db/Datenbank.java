@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 import com.mysql.jdbc.ResultSet;
 //import com.mysql.jdbc.Statement;
@@ -25,6 +26,27 @@ public class Datenbank
 		{
 			e.printStackTrace();
 		}
+		
+	}
+	
+	public static ArrayList<String> getCategories()
+	{
+		try
+		{
+			Statement statment = connection.createStatement();
+			java.sql.ResultSet result = statment.executeQuery("SELECT CategoryName FROM categories");
+			ArrayList<String> catName = new ArrayList<String>();
+			while(result.next())
+			{
+				catName.add(result.getString(1));
+			}
+			return catName;
+		}
+		catch(Exception e)
+		{
+			
+		}
+		return null;
 		
 	}
 	
@@ -60,6 +82,24 @@ public class Datenbank
 		
 		
 		
+		return false;
+	}
+	
+	public static boolean login(String username, String password)
+	{
+		java.sql.Statement statment;
+		try
+		{
+			statment = connection.createStatement();
+			java.sql.ResultSet result = statment.executeQuery("SELECT * FROM user WHERE Username = '"+ username + "' AND Userpassword = '" + password + "'");
+			return  result.next();
+			
+		
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 		return false;
 	}
 	

@@ -5,8 +5,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 import com.errorgamesstudio.lwserver.db.Datenbank;
 
@@ -37,8 +40,16 @@ public class Client implements Runnable
 	public void run()
 	{
 		boolean isActive = true;
-		BufferedReader inReader = new BufferedReader(new InputStreamReader(inputStream));
-		PrintWriter outWriter = new PrintWriter(outputStream);
+		BufferedReader inReader = null;
+		try 
+		{
+			inReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+		} 
+		catch (UnsupportedEncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		PrintWriter outWriter = new PrintWriter(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
 		while(isActive)
 		{
 			String input = "";
@@ -66,6 +77,17 @@ public class Client implements Runnable
 				 		password = password.trim();
 				 		System.out.println("Username=" + username);
 				 		System.out.println("Password=" + password);
+				 		if(Datenbank.login(username, password))
+				 		{
+				 			System.out.println(username + " logged in");
+				 			outWriter.println(addSpaces("LOGGEDIN"));
+				 		}
+				 		else
+				 		{
+				 			System.out.println("Fehler bei der Anmeldung");
+				 			outWriter.println(addSpaces("ERROR") + addSpaces("21"));
+				 		}
+				 		outWriter.flush();
 				 		break;
 				 	}	 	
 				 	
@@ -105,9 +127,23 @@ public class Client implements Runnable
 				 		newUsername = newUsername.trim();
 				 		String password = input.substring(40, 59);
 				 		password = password.trim();
-				 		
+				 		System.out.println("REGISTRIEREN");
 				 		Datenbank.register(newUsername, password);
 				 		
+				 	}
+				 	case "REQUEST_CATEGRORIES":
+				 	{
+				 		new Thread(new Runnable() {
+							
+							@Override
+							public void run() {
+								for(String s : Datenbank.getCategories())
+						 		{
+						 			outWriter.println(addSpaces("CATEGORY") + addSpaces(s));
+						 			outWriter.flush();
+						 		}
+							}
+						}).start();
 				 	}/*
 				 	case "REPORT":
 				 	{
@@ -177,4 +213,13 @@ public class Client implements Runnable
 			}
 		}
 	}
+	
+	private String addSpaces(String input)
+    {
+        for(int i = input.length();i < 20; i++)
+        {
+            input += " ";
+        }
+        return input;
+    }
 }
