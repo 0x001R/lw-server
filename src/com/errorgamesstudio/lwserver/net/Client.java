@@ -131,7 +131,7 @@ public class Client implements Runnable
 				 		password = password.trim();
 				 		System.out.println("REGISTRIEREN");
 				 		Datenbank.register(newUsername, password);
-				 		
+				 		break;
 				 	}
 				 	case "REQUEST_CATEGRORIES":
 				 	{
@@ -146,6 +146,7 @@ public class Client implements Runnable
 						 		}
 							}
 						}).start();
+				 		break;
 				 	}
 				 	case "LOAD_JOKE":
 				 	{
@@ -170,6 +171,7 @@ public class Client implements Runnable
 								}
 							}
 						}).start();
+				 		break;
 				 	}/*
 				 	}
 				 	case "REPORT":
