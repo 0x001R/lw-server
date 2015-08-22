@@ -10,8 +10,10 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 import com.errorgamesstudio.lwserver.db.Datenbank;
+import com.errorgamesstudio.lwserver.lw.Joke;
 
 public class Client implements Runnable
 {
@@ -144,7 +146,32 @@ public class Client implements Runnable
 						 		}
 							}
 						}).start();
+				 	}
+				 	case "LOAD_JOKE":
+				 	{
+				 		String category = input.substring(20 ,39).trim();
+				 		int categoryTyp = Integer.valueOf(input.substring(40, 59).trim());
+				 		int first = Integer.valueOf(input.substring(60, 79).trim());
+				 		int amount = Integer.valueOf(input.substring(80, 99).trim());
+				 		
+				 		new Thread(new Runnable() {
+							
+							@Override
+							public void run() {
+								ArrayList<Joke> jokes = Datenbank.loadJokes(category, categoryTyp, first, amount);
+								
+								if(jokes != null)
+								{
+									for(Joke j : jokes)
+									{
+										outWriter.println(addSpaces("JOKE") + addSpaces(j.category) + addSpaces(String.valueOf(j.categoryType)) + addSpaces(j.date.toString()) + addSpaces(String.valueOf(j.hype)) + addSpaces(String.valueOf(j.jokeId)) + addSpaces(j.username) + addSpaces(String.valueOf(j.votes)) + addSpaces(j.jokeText));
+							 			outWriter.flush();
+									}
+								}
+							}
+						}).start();
 				 	}/*
+				 	}
 				 	case "REPORT":
 				 	{
 				 		Datenbank.report(username, parameter[1]);

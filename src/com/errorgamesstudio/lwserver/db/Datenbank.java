@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import com.errorgamesstudio.lwserver.lw.Joke;
 import com.mysql.jdbc.ResultSet;
 //import com.mysql.jdbc.Statement;
 
@@ -33,8 +34,8 @@ public class Datenbank
 	{
 		try
 		{
-			Statement statment = connection.createStatement();
-			java.sql.ResultSet result = statment.executeQuery("SELECT CategoryName FROM categories");
+			Statement statement = connection.createStatement();
+			java.sql.ResultSet result = statement.executeQuery("SELECT CategoryName FROM categories");
 			ArrayList<String> catName = new ArrayList<String>();
 			while(result.next())
 			{
@@ -48,6 +49,51 @@ public class Datenbank
 		}
 		return null;
 		
+	}
+	
+	public static ArrayList<Joke> loadJokes(String category, int categoryTyp, int first, int amount)
+	{
+		try
+		{
+			Statement statement = connection.createStatement();
+			java.sql.ResultSet result;
+			if(categoryTyp == 0)
+			{
+				result = statement.executeQuery("select temp.jokeID, temp.userID, temp.categoryID, temp.jokeText, temp.jokesVotes, temp.jokeHype, temp.jokeDate, user.Username from (select * from jokes inner join categories on jokes.categoryID = categories.idCategories where CategoryName = 'Einzeiler' AND row_count() <= " + (first + amount) +" AND row_count() >= " + first + " order by jokeHype) AS temp inner join user on temp.userID = user.idUser;");
+			}
+			else if(categoryTyp == 1)
+			{
+				result = statement.executeQuery("select temp.jokeID, temp.userID, temp.categoryID, temp.jokeText, temp.jokesVotes, temp.jokeHype, temp.jokeDate, user.Username from (select * from jokes inner join categories on jokes.categoryID = categories.idCategories where CategoryName = 'Einzeiler' AND row_count() <= " + (first + amount) +" AND row_count() >= " + first + " order by jokeHype) AS temp inner join user on temp.userID = user.idUser;");
+			}
+			else
+			{
+				result = statement.executeQuery("select temp.jokeID, temp.userID, temp.categoryID, temp.jokeText, temp.jokesVotes, temp.jokeHype, temp.jokeDate, user.Username from (select * from jokes inner join categories on jokes.categoryID = categories.idCategories where CategoryName = 'Einzeiler' AND row_count() <= " + (first + amount) +" AND row_count() >= " + first + " order by jokeHype) AS temp inner join user on temp.userID = user.idUser;");
+			}
+			ArrayList<Joke> jokes = new ArrayList<Joke>();
+			while(result.next())
+			{
+				Joke temp = new Joke();
+				
+				temp.jokeId = result.getInt(1);	
+				temp.jokeText = result.getString(4);
+				temp.votes = result.getInt(5);
+				temp.hype = result.getInt(6);
+				temp.date = result.getDate(7);
+				temp.username = result.getString(8);
+				temp.category = category;
+				temp.categoryType = categoryTyp;
+				
+				jokes.add(temp);
+			}
+			
+			return jokes;
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	
 	public static boolean postNewJoke(String user, String jokeText)
