@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Random;
 
 import com.errorgamesstudio.lwserver.lw.Joke;
 import com.mysql.jdbc.ResultSet;
@@ -57,9 +58,10 @@ public class Datenbank
 		{
 			Statement statement = connection.createStatement();
 			java.sql.ResultSet result;
+			categoryTyp = 0;
 			if(categoryTyp == 0)
 			{
-				result = statement.executeQuery("select temp.jokeID, temp.userID, temp.categoryID, temp.jokeText, temp.jokesVotes, temp.jokeHype, temp.jokeDate, user.Username from (select * from jokes inner join categories on jokes.categoryID = categories.idCategories where CategoryName = 'Einzeiler' AND row_count() <= " + (first + amount) +" AND row_count() >= " + first + " order by jokeHype) AS temp inner join user on temp.userID = user.idUser;");
+				result = statement.executeQuery("select temp.jokeID, temp.userID, temp.categoryID, temp.jokeText, temp.jokesVotes, temp.jokeHype, temp.jokeDate, user.Username from (select * from jokes inner join categories on jokes.categoryID = categories.idCategories where CategoryName = 'Einzeiler' AND row_count() <= 20 AND row_count() >= 0 order by jokeHype) AS temp inner join user on temp.userID = user.idUser;");
 			}
 			else if(categoryTyp == 1)
 			{
@@ -69,6 +71,9 @@ public class Datenbank
 			{
 				result = statement.executeQuery("select temp.jokeID, temp.userID, temp.categoryID, temp.jokeText, temp.jokesVotes, temp.jokeHype, temp.jokeDate, user.Username from (select * from jokes inner join categories on jokes.categoryID = categories.idCategories where CategoryName = 'Einzeiler' AND row_count() <= " + (first + amount) +" AND row_count() >= " + first + " order by jokeHype) AS temp inner join user on temp.userID = user.idUser;");
 			}
+			
+			result = statement.executeQuery("select * from jokes");
+			
 			ArrayList<Joke> jokes = new ArrayList<Joke>();
 			while(result.next())
 			{
@@ -79,13 +84,15 @@ public class Datenbank
 				temp.votes = result.getInt(5);
 				temp.hype = result.getInt(6);
 				temp.date = result.getDate(7);
-				temp.username = result.getString(8);
+				//temp.username = result.getString(8);
 				temp.category = category;
-				temp.categoryType = categoryTyp;
+				temp.categoryType = new Random().nextInt(3);
 				
 				jokes.add(temp);
+				
+				System.out.println("Es gibt Witze");
 			}
-			
+			System.out.println("oder doch nicht");
 			return jokes;
 		}
 		catch(Exception e)

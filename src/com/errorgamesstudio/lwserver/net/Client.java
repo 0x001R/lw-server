@@ -11,6 +11,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import com.errorgamesstudio.lwserver.db.Datenbank;
 import com.errorgamesstudio.lwserver.lw.Joke;
@@ -165,7 +166,7 @@ public class Client implements Runnable
 								{
 									for(Joke j : jokes)
 									{
-										outWriter.println(addSpaces("JOKE") + addSpaces(j.category) + addSpaces(String.valueOf(j.categoryType)) + addSpaces(j.date.toString()) + addSpaces(String.valueOf(j.hype)) + addSpaces(String.valueOf(j.jokeId)) + addSpaces(j.username) + addSpaces(String.valueOf(j.votes)) + addSpaces(j.jokeText));
+										outWriter.println(addSpaces("JOKE") + addSpaces(j.category) + addSpaces(String.valueOf(j.categoryType)) + addSpaces(Calendar.getInstance().getTime().getTime() + "") + addSpaces(String.valueOf(j.hype)) + addSpaces(String.valueOf(j.jokeId)) + addSpaces(j.username) + addSpaces(String.valueOf(j.votes)) + addSpaces(j.jokeText));
 							 			outWriter.flush();
 									}
 								}
@@ -245,6 +246,10 @@ public class Client implements Runnable
 	
 	private String addSpaces(String input)
     {
+		if(input == null)
+		{
+			input = "  ";
+		}
         for(int i = input.length();i < 20; i++)
         {
             input += " ";
