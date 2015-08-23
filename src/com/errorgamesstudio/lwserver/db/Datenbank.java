@@ -86,7 +86,7 @@ public class Datenbank
 				temp.date = result.getDate(7);
 				//temp.username = result.getString(8);
 				temp.category = category;
-				temp.categoryType = new Random().nextInt(3);
+				temp.categoryType = categoryTyp;
 				
 				jokes.add(temp);
 				
