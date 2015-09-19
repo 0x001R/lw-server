@@ -80,10 +80,12 @@ public class Client implements Runnable
 				 		password = password.trim();
 				 		System.out.println("Username=" + username);
 				 		System.out.println("Password=" + password);
-				 		if(Datenbank.login(username, password))
+				 		int userID = Datenbank.login(username, password);
+				 		System.out.println("UserID=" + userID);
+				 		if(userID != -1)
 				 		{
 				 			System.out.println(username + " logged in");
-				 			outWriter.println(addSpaces("LOGGEDIN"));
+				 			outWriter.println(addSpaces(addSpaces("LOGGEDIN") + addSpaces(userID + "")));
 				 		}
 				 		else
 				 		{
@@ -155,25 +157,64 @@ public class Client implements Runnable
 				 		int categoryTyp = Integer.valueOf(input.substring(40, 59).trim());
 				 		int first = Integer.valueOf(input.substring(60, 79).trim());
 				 		int amount = Integer.valueOf(input.substring(80, 99).trim());
+				 		int userID = Integer.valueOf(input.substring(100, 119).trim());
 				 		
 				 		new Thread(new Runnable() {
 							
 							@Override
 							public void run() {
-								ArrayList<Joke> jokes = Datenbank.loadJokes(category, categoryTyp, first, amount);
+								ArrayList<Joke> jokes = Datenbank.loadJokes(category, categoryTyp, first, amount, userID);
 								
 								if(jokes != null)
 								{
 									for(Joke j : jokes)
 									{
-										outWriter.println(addSpaces("JOKE") + addSpaces(j.category) + addSpaces(String.valueOf(j.categoryType)) + addSpaces(Calendar.getInstance().getTime().getTime() + "") + addSpaces(String.valueOf(j.hype)) + addSpaces(String.valueOf(j.jokeId)) + addSpaces(j.username) + addSpaces(String.valueOf(j.votes)) + addSpaces(j.jokeText));
+										outWriter.println(addSpaces("JOKE") + addSpaces(j.category) + addSpaces(String.valueOf(j.categoryType)) + addSpaces(Calendar.getInstance().getTime().getTime() + "") + addSpaces(String.valueOf(j.hype)) + addSpaces(String.valueOf(j.jokeId)) + addSpaces(j.username) + addSpaces(String.valueOf(j.votes)) + addSpaces(j.voted + "")+ addSpaces(j.favorit+"")+ j.jokeText);
 							 			outWriter.flush();
 									}
 								}
 							}
 						}).start();
 				 		break;
-				 	}/*
+				 	}
+				 	case "VOTE":
+				 	{
+				 		int jokeID = Integer.valueOf(input.substring(20,39).trim());
+				 		int userID = Integer.valueOf(input.substring(40,59).trim());
+				 		
+				 		Datenbank.rateJoke(userID, jokeID);
+				 		
+				 		break;
+				 	}
+				 	case "UNVOTE":
+				 	{
+				 		int jokeID = Integer.valueOf(input.substring(20,39).trim());
+				 		int userID = Integer.valueOf(input.substring(40,59).trim());
+				 		
+				 		Datenbank.unrateJoke(userID, jokeID);
+				 		
+				 		break;
+				 	}
+				 	case "FAVORIT":
+				 	{
+				 		int jokeID = Integer.valueOf(input.substring(20,39).trim());
+				 		int userID = Integer.valueOf(input.substring(40,59).trim());
+				 		
+				 		Datenbank.favoritJoke(jokeID, userID);
+				 		
+				 		break;
+				 	}
+				 	case "UNFAVORIT":
+				 	{
+				 		int jokeID = Integer.valueOf(input.substring(20,39).trim());
+				 		int userID = Integer.valueOf(input.substring(40,59).trim());
+				 		
+				 		Datenbank.unfavoritJoke(jokeID, userID);
+				 		
+				 		break;
+				 	}
+				 	/*
+				 	}
 				 	}
 				 	case "REPORT":
 				 	{

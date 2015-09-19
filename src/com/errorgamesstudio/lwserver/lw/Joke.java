@@ -11,4 +11,6 @@ public class Joke {
     public int hype;
     public String category;
     public int categoryType;
+    public boolean voted;
+    public boolean favorit;
 }
