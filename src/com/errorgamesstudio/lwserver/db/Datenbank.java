@@ -5,12 +5,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Random;
 
 import com.errorgamesstudio.lwserver.lw.Joke;
-import com.mysql.jdbc.ResultSet;
-//import com.mysql.jdbc.Statement;
-
 
 public class Datenbank
 {
@@ -22,7 +18,7 @@ public class Datenbank
 		{
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			
-			connection = DriverManager.getConnection("jdbc:mysql://localhost/lw-datenbank?user=server&password=1234");
+			connection = DriverManager.getConnection("jdbc:mysql://localhost/lw-datenbank?user=lwserver&password=1234");
 		}
 		catch(Exception e)
 		{
