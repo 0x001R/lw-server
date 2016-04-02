@@ -165,15 +165,12 @@ public class Client implements Runnable
 							
 							@Override
 							public void run() {
-								ArrayList<Joke> jokes = Datenbank.loadJokes(category, categoryTyp, first, amount, userID);
+								String jokes = Datenbank.loadJokes(category, categoryTyp, first, amount, userID);
 								
 								if(jokes != null)
 								{
-									for(Joke j : jokes)
-									{
-										outWriter.println(addSpaces("JOKE") + addSpaces(j.category) + addSpaces(String.valueOf(j.categoryType)) + addSpaces(Calendar.getInstance().getTime().getTime() + "") + addSpaces(String.valueOf(j.hype)) + addSpaces(String.valueOf(j.jokeId)) + addSpaces(j.username) + addSpaces(String.valueOf(j.votes)) + addSpaces(j.voted + "")+ addSpaces(j.favorit+"")+ j.jokeText);
-							 			outWriter.flush();
-									}
+									outWriter.println(addSpaces("JOKES") + jokes);
+						 			outWriter.flush();
 								}
 							}
 						}).start();

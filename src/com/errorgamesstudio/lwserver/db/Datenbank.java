@@ -9,6 +9,8 @@ import java.util.UUID;
 
 import com.errorgamesstudio.lwserver.lw.Joke;
 import com.errorgamesstudio.lwserver.lw.User;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class Datenbank
 {
@@ -50,7 +52,7 @@ public class Datenbank
 		
 	}
 	
-	public static ArrayList<Joke> loadJokes(String category, int categoryTyp, int first, int amount, int userID)
+	public static String loadJokes(String category, int categoryTyp, int first, int amount, int userID)
 	{
 		try
 		{
@@ -91,7 +93,8 @@ public class Datenbank
 				System.out.println("Es gibt Witze");
 			}
 			System.out.println("oder doch nicht");
-			return jokes;
+			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").create();
+			return gson.toJson(jokes.toArray());
 		}
 		catch(Exception e)
 		{
