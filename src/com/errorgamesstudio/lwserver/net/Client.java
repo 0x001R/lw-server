@@ -15,6 +15,7 @@ import java.util.Calendar;
 
 import com.errorgamesstudio.lwserver.db.Datenbank;
 import com.errorgamesstudio.lwserver.lw.Joke;
+import com.errorgamesstudio.lwserver.lw.User;
 
 public class Client implements Runnable
 {
@@ -80,12 +81,13 @@ public class Client implements Runnable
 				 		password = password.trim();
 				 		System.out.println("Username=" + username);
 				 		System.out.println("Password=" + password);
-				 		int userID = Datenbank.login(username, password);
-				 		System.out.println("UserID=" + userID);
-				 		if(userID != -1)
+				 		User user = Datenbank.login(username, password);
+				 		System.out.println("UserID=" + user.getUserID());
+				 		if(user.getUserID() != -1)
 				 		{
 				 			System.out.println(username + " logged in");
-				 			outWriter.println(addSpaces(addSpaces("LOGGEDIN") + addSpaces(userID + "")));
+				 			System.out.println(username + "    " + user.getSessionID());
+				 			outWriter.println(addSpaces(addSpaces("LOGGEDIN") + addSpaces(user.getUserID() + "") + user.getSessionID()));
 				 		}
 				 		else
 				 		{

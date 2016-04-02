@@ -5,8 +5,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import com.errorgamesstudio.lwserver.lw.Joke;
+import com.errorgamesstudio.lwserver.lw.User;
 
 public class Datenbank
 {
@@ -134,18 +136,24 @@ public class Datenbank
 		return false;
 	}
 	
-	public static int login(String username, String password)
+	public static User login(String username, String password)
 	{
 		java.sql.Statement statment;
 		try
 		{
 			statment = connection.createStatement();
 			java.sql.ResultSet result = statment.executeQuery("SELECT * FROM user WHERE Username = '"+ username + "' AND Userpassword = '" + password + "'");
+			String sessionID = generateSessionId();
+			
 			if(result.next())
-				return result.getInt(1);
+			{
+				User user = new User(result.getInt(1), sessionID, username);
+				statment.execute("UPDATE user SET sessionID ='" + user.getSessionID() + "' WHERE idUser=" + user.getUserID());
+				return user;
+			}
 			else
 			{
-				return -1;
+				return new User(-1, null, null);
 			}
 			
 		
@@ -154,7 +162,29 @@ public class Datenbank
 		{
 			e.printStackTrace();
 		}
-		return -1;
+		return new User(-1, null, null);
+	}
+	
+	public static String generateSessionId()
+	{
+		UUID uuid = UUID.randomUUID();
+		try{
+			java.sql.Statement statment = connection.createStatement();
+			java.sql.ResultSet result = statment.executeQuery("SELECT sessionID FROM user WHERE sessionID = '" + uuid.toString() + "'");
+			if(result.next())
+			{
+				return generateSessionId();
+			}
+			else
+			{
+				return uuid.toString();
+			}
+		}
+		catch(Exception e){
+			
+		}
+		
+		return "";
 	}
 	
 	public static void getJokes(String cat, String parameter, int first, int last)
