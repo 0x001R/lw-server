@@ -7,6 +7,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import com.errorgamesstudio.lwserver.lw.Category;
 import com.errorgamesstudio.lwserver.lw.Joke;
 import com.errorgamesstudio.lwserver.lw.User;
 import com.google.gson.Gson;
@@ -31,22 +32,27 @@ public class Datenbank
 		
 	}
 	
-	public static ArrayList<String> getCategories()
+	public static Category[] getCategories()
 	{
 		try
 		{
 			Statement statement = connection.createStatement();
-			java.sql.ResultSet result = statement.executeQuery("SELECT CategoryName FROM categories");
-			ArrayList<String> catName = new ArrayList<String>();
+			java.sql.ResultSet result = statement.executeQuery("SELECT * FROM categories");
+			ArrayList<Category> cats = new ArrayList<Category>();
 			while(result.next())
 			{
-				catName.add(result.getString(1));
+				Category cat = new Category();
+				cat.setCategoryID(result.getInt(1));
+				cat.setCategoryName(result.getString(2));
+				cats.add(cat);
 			}
-			return catName;
+			Category[] temp = new Category[cats.size()];
+			
+			return cats.toArray(temp);
 		}
 		catch(Exception e)
 		{
-			
+			e.printStackTrace();
 		}
 		return null;
 		

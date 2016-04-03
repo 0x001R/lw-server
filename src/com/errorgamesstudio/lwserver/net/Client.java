@@ -144,11 +144,11 @@ public class Client implements Runnable
 							
 							@Override
 							public void run() {
-								for(String s : Datenbank.getCategories())
-						 		{
-						 			outWriter.println(addSpaces("CATEGORY") + addSpaces(s));
-						 			outWriter.flush();
-						 		}
+								
+								Gson gson = new Gson();
+								
+								outWriter.println(gson.toJson(Datenbank.getCategories()));
+					 			outWriter.flush();
 							}
 						}).start();
 				 		break;
