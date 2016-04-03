@@ -10,12 +10,10 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Calendar;
 
 import com.errorgamesstudio.lwserver.db.Datenbank;
-import com.errorgamesstudio.lwserver.lw.Joke;
 import com.errorgamesstudio.lwserver.lw.User;
+import com.google.gson.Gson;
 
 public class Client implements Runnable
 {
@@ -87,7 +85,9 @@ public class Client implements Runnable
 				 		{
 				 			System.out.println(username + " logged in");
 				 			System.out.println(username + "    " + user.getSessionID());
-				 			outWriter.println(addSpaces(addSpaces("LOGGEDIN") + addSpaces(user.getUserID() + "") + user.getSessionID()));
+				 			Gson gson = new Gson();
+				 			outWriter.println(gson.toJson(user));
+				 			//outWriter.println(addSpaces(addSpaces("LOGGEDIN") + addSpaces(user.getUserID() + "") + user.getSessionID()));
 				 		}
 				 		else
 				 		{

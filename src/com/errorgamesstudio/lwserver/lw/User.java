@@ -9,14 +9,14 @@ public class User implements Serializable {
 	private static final long serialVersionUID = 8834109452659776861L;
 	private int userID;
 	private String sessionID;
-	private String name;
+	private String username;
 	
 	
-	public User(int userID, String sessionID, String name)
+	public User(int userID, String sessionID, String username)
 	{
 		this.setUserID(userID);
 		this.setSessionID(sessionID);
-		this.setName(name);
+		this.setUsername(username);
 	}
 
 
@@ -55,15 +55,15 @@ public class User implements Serializable {
 	/**
 	 * @return the name
 	 */
-	public String getName() {
-		return name;
+	public String getUsername() {
+		return username;
 	}
 
 
 	/**
 	 * @param name the name to set
 	 */
-	public void setName(String name) {
-		this.name = name;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 }
