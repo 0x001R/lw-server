@@ -71,7 +71,6 @@ public class Datenbank
 				result = statement.executeQuery("select temp4.jokeID, temp4.userID, categoryID, jokeText, jokesVotes, jokeHype, jokeDate, Username, voted, favorit from (select temp2.jokeID, temp2.userID, categoryID, jokeText, jokesVotes, jokeHype, jokeDate, Username, voted from (select temp.jokeID, temp.userID, temp.categoryID, temp.jokeText, temp.jokesVotes, temp.jokeHype, temp.jokeDate, user.Username from (select * from jokes inner join categories on jokes.categoryID = categories.idCategories where CategoryName = '" + category + "') AS temp inner join user on temp.userID = user.idUser order by jokeDate desc LIMIT " + first + ","+ amount +") AS temp2 left join (select * from jokevotes where userID = 5) as temp3 on temp3.jokeID = temp2.jokeID) AS temp4 left join (select * from favorites where userID = " + userID + ") AS temp5 on temp4.jokeID = temp5.jokeID;");
 			}
 			ArrayList<Joke> jokes = new ArrayList<Joke>();
-			int count = 0;
 			while(result.next())
 			{
 				Joke temp = new Joke();
@@ -86,6 +85,17 @@ public class Datenbank
 				temp.categoryType = categoryTyp;
 				temp.voted = result.getBoolean(9);
 				temp.favorit = result.getBoolean(10);
+				
+				Statement voteStatement = connection.createStatement();
+				java.sql.ResultSet voteResult = voteStatement.executeQuery("SELECT count(userID) AS numberofvotes FROM jokevotes where jokeID = " + temp.jokeId + " AND voted = 1;");
+				if(voteResult.next())
+				{
+					temp.votes = voteResult.getInt(1);
+				}
+				else
+				{
+					temp.votes = 0;
+				}
 				
 				jokes.add(temp);
 				
