@@ -2,6 +2,7 @@ package com.errorgamesstudio.lwserver.db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -58,23 +59,50 @@ public class Datenbank
 		
 	}
 	
-	public static String loadJokes(String category, int categoryTyp, int first, int amount, int userID)
+	public static String loadJokes(int categoryID, String order, int currentAmount, String sessionID)
 	{
 		try
 		{
+			int userID = -1;
+			
+			// First geht userID from sessionID if sessionID is not null or ""
+			if(sessionID != null && !sessionID.equals(""))
+			{
+				Statement statement = connection.createStatement();
+				ResultSet result = statement.executeQuery("select idUser from user where sessionID = '" + sessionID + "'");
+				if(result.next())
+				{
+					userID = result.getInt(1);
+				}
+				else 
+					userID = -1;
+			}
+			
+			
+			
 			Statement statement = connection.createStatement();
-			java.sql.ResultSet result;
-			if(categoryTyp == 0)
+			java.sql.ResultSet result = null;
+			if(order.trim().equals("topToday"))
 			{
-				result = statement.executeQuery("select temp4.jokeID, temp4.userID, categoryID, jokeText, jokesVotes, jokeHype, jokeDate, Username, voted, favorit from (select temp2.jokeID, temp2.userID, categoryID, jokeText, jokesVotes, jokeHype, jokeDate, Username, voted from (select temp.jokeID, temp.userID, temp.categoryID, temp.jokeText, temp.jokesVotes, temp.jokeHype, temp.jokeDate, user.Username from (select * from jokes inner join categories on jokes.categoryID = categories.idCategories where CategoryName = '" + category + "') AS temp inner join user on temp.userID = user.idUser order by jokeHype desc LIMIT " + first + ","+ amount +") AS temp2 left join (select * from jokevotes where userID = 5) as temp3 on temp3.jokeID = temp2.jokeID) AS temp4 left join (select * from favorites where userID = " + userID + ") AS temp5 on temp4.jokeID = temp5.jokeID;");
+				result = statement.executeQuery("select jokes.*, user.Username from jokes, user where jokes.categoryID = " +categoryID+" order by jokeHype desc limit "+currentAmount+", "+currentAmount+20);
+				System.out.println("ORDER: " + order);
+
+				// Deprecated
+				//result = statement.executeQuery("select temp4.jokeID, temp4.userID, categoryID, jokeText, jokesVotes, jokeHype, jokeDate, Username, voted, favorit from (select temp2.jokeID, temp2.userID, categoryID, jokeText, jokesVotes, jokeHype, jokeDate, Username, voted from (select temp.jokeID, temp.userID, temp.categoryID, temp.jokeText, temp.jokesVotes, temp.jokeHype, temp.jokeDate, user.Username from (select * from jokes inner join categories on jokes.categoryID = categories.idCategories where CategoryName = '" + category + "') AS temp inner join user on temp.userID = user.idUser order by jokeHype desc LIMIT " + first + ","+ amount +") AS temp2 left join (select * from jokevotes where userID = 5) as temp3 on temp3.jokeID = temp2.jokeID) AS temp4 left join (select * from favorites where userID = " + userID + ") AS temp5 on temp4.jokeID = temp5.jokeID;");
 			}
-			else if(categoryTyp == 1)
+			else if(order.trim().equals("topAllTime"))
 			{
-				result = statement.executeQuery("select temp4.jokeID, temp4.userID, categoryID, jokeText, jokesVotes, jokeHype, jokeDate, Username, voted, favorit from (select temp2.jokeID, temp2.userID, categoryID, jokeText, jokesVotes, jokeHype, jokeDate, Username, voted from (select temp.jokeID, temp.userID, temp.categoryID, temp.jokeText, temp.jokesVotes, temp.jokeHype, temp.jokeDate, user.Username from (select * from jokes inner join categories on jokes.categoryID = categories.idCategories where CategoryName = '" + category + "') AS temp inner join user on temp.userID = user.idUser order by jokesVotes desc LIMIT " + first + ","+ amount +") AS temp2 left join (select * from jokevotes where userID = 5) as temp3 on temp3.jokeID = temp2.jokeID) AS temp4 left join (select * from favorites where userID = " + userID + ") AS temp5 on temp4.jokeID = temp5.jokeID;");
+				result = statement.executeQuery("select jokes.*, user.Username from jokes, user where jokes.categoryID = " +categoryID+" order by jokesvotes desc limit "+currentAmount+", "+currentAmount+20);
+				
+				//Deprecated
+				//result = statement.executeQuery("select temp4.jokeID, temp4.userID, categoryID, jokeText, jokesVotes, jokeHype, jokeDate, Username, voted, favorit from (select temp2.jokeID, temp2.userID, categoryID, jokeText, jokesVotes, jokeHype, jokeDate, Username, voted from (select temp.jokeID, temp.userID, temp.categoryID, temp.jokeText, temp.jokesVotes, temp.jokeHype, temp.jokeDate, user.Username from (select * from jokes inner join categories on jokes.categoryID = categories.idCategories where CategoryName = '" + category + "') AS temp inner join user on temp.userID = user.idUser order by jokesVotes desc LIMIT " + first + ","+ amount +") AS temp2 left join (select * from jokevotes where userID = 5) as temp3 on temp3.jokeID = temp2.jokeID) AS temp4 left join (select * from favorites where userID = " + userID + ") AS temp5 on temp4.jokeID = temp5.jokeID;");
 			}
-			else
+			else if(order.trim().equals("newest"))
 			{
-				result = statement.executeQuery("select temp4.jokeID, temp4.userID, categoryID, jokeText, jokesVotes, jokeHype, jokeDate, Username, voted, favorit from (select temp2.jokeID, temp2.userID, categoryID, jokeText, jokesVotes, jokeHype, jokeDate, Username, voted from (select temp.jokeID, temp.userID, temp.categoryID, temp.jokeText, temp.jokesVotes, temp.jokeHype, temp.jokeDate, user.Username from (select * from jokes inner join categories on jokes.categoryID = categories.idCategories where CategoryName = '" + category + "') AS temp inner join user on temp.userID = user.idUser order by jokeDate desc LIMIT " + first + ","+ amount +") AS temp2 left join (select * from jokevotes where userID = 5) as temp3 on temp3.jokeID = temp2.jokeID) AS temp4 left join (select * from favorites where userID = " + userID + ") AS temp5 on temp4.jokeID = temp5.jokeID;");
+				result = statement.executeQuery("select jokes.*, user.Username from jokes, user where jokes.categoryID = " +categoryID+" order by jokeDate desc limit "+currentAmount+", "+currentAmount+20);
+				
+				//Deprecated
+				//result = statement.executeQuery("select temp4.jokeID, temp4.userID, categoryID, jokeText, jokesVotes, jokeHype, jokeDate, Username, voted, favorit from (select temp2.jokeID, temp2.userID, categoryID, jokeText, jokesVotes, jokeHype, jokeDate, Username, voted from (select temp.jokeID, temp.userID, temp.categoryID, temp.jokeText, temp.jokesVotes, temp.jokeHype, temp.jokeDate, user.Username from (select * from jokes inner join categories on jokes.categoryID = categories.idCategories where CategoryName = '" + category + "') AS temp inner join user on temp.userID = user.idUser order by jokeDate desc LIMIT " + first + ","+ amount +") AS temp2 left join (select * from jokevotes where userID = 5) as temp3 on temp3.jokeID = temp2.jokeID) AS temp4 left join (select * from favorites where userID = " + userID + ") AS temp5 on temp4.jokeID = temp5.jokeID;");
 			}
 			ArrayList<Joke> jokes = new ArrayList<Joke>();
 			while(result.next())
@@ -87,11 +115,36 @@ public class Datenbank
 				temp.hype = result.getInt(6);
 				temp.date = result.getDate(7);
 				temp.username = result.getString(8);
-				temp.category = category;
-				temp.categoryType = categoryTyp;
-				temp.voted = result.getBoolean(9);
-				temp.favorit = result.getBoolean(10);
+				// Not clean work. Hope I dont need next two somewhere else
+				temp.category = "";
+				temp.categoryType = -1;
+				//Shit above
 				
+				//Workaround incoming
+				Statement votedStatement = connection.createStatement();
+				java.sql.ResultSet votedResult = votedStatement.executeQuery("SELECT voted from jokevotes where jokeID ="+temp.getJokeId() + " and userID ="+ userID);
+				if(votedResult.next())
+				{
+					temp.voted = votedResult.getBoolean(1);
+				}
+				else
+				{
+					temp.voted = false;
+				}
+				
+				Statement favStatement = connection.createStatement();
+				java.sql.ResultSet favResult = votedStatement.executeQuery("SELECT favorit from favorites where jokeID ="+temp.getJokeId() + " and userID ="+ userID);
+				if(favResult.next())
+				{
+					temp.favorit = favResult.getBoolean(1);
+				}
+				else
+				{
+					temp.favorit = false;
+				}
+
+				
+								
 				Statement voteStatement = connection.createStatement();
 				java.sql.ResultSet voteResult = voteStatement.executeQuery("SELECT count(userID) AS numberofvotes FROM jokevotes where jokeID = " + temp.jokeId + " AND voted = 1;");
 				if(voteResult.next())
@@ -104,11 +157,7 @@ public class Datenbank
 				}
 				
 				jokes.add(temp);
-				
-				
-				System.out.println("Es gibt Witze");
 			}
-			System.out.println("oder doch nicht");
 			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").create();
 			return gson.toJson(jokes.toArray());
 		}

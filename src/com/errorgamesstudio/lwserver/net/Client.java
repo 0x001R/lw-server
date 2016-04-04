@@ -153,23 +153,27 @@ public class Client implements Runnable
 						}).start();
 				 		break;
 				 	}
-				 	case "LOAD_JOKE":
+				 	case "LOAD_JOKES":
 				 	{
-				 		String category = input.substring(20 ,39).trim();
-				 		int categoryTyp = Integer.valueOf(input.substring(40, 59).trim());
-				 		int first = Integer.valueOf(input.substring(60, 79).trim());
-				 		int amount = Integer.valueOf(input.substring(80, 99).trim());
-				 		int userID = Integer.valueOf(input.substring(100, 119).trim());
+				 		String sCategoryID = input.substring(20,39).trim();
+				 		int categoryID = Integer.valueOf(sCategoryID);
+				 		
+				 		String order = input.substring(40, 59);
+				 		
+				 		String sCurrentAmount = input.substring(60, 79).trim();
+				 		int currentAmount = Integer.valueOf(sCurrentAmount);
+				 		
+				 		String sessionID = input.substring(80).trim();
 				 		
 				 		new Thread(new Runnable() {
 							
 							@Override
 							public void run() {
-								String jokes = Datenbank.loadJokes(category, categoryTyp, first, amount, userID);
+								String jokes = Datenbank.loadJokes(categoryID, order, currentAmount, sessionID);
 								
 								if(jokes != null)
 								{
-									outWriter.println(addSpaces("JOKES") + jokes);
+									outWriter.println(jokes);
 						 			outWriter.flush();
 								}
 							}
