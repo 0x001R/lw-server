@@ -320,58 +320,48 @@ public class Datenbank
 		}
 		return true;
 	}
-	
-	public static void unrateJoke(int userID, int jokeID)
-	{
-		java.sql.Statement statement;
-		boolean result;
 		
-		try
-		{
-			statement = connection.createStatement();
-			result = statement.execute("DELETE FROM jokevotes where userID = " + userID + " AND jokeID = " + jokeID);
-		}
-		catch (SQLException e) 
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	public static void favoritJoke(int jokeID, int userID)
+	public static boolean favoritJoke(int jokeID, boolean newFavorite, String sessionID)
 	{
-		java.sql.Statement statement;
-		boolean result;
-		
-		try
-		{
-			statement = connection.createStatement();
-			result = statement.execute("INSERT INTO favorites (jokeID, userID) VALUES ('" + jokeID + "','" + userID +"');");
-		}
-		catch (SQLException e) 
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		// First get userID from sessionID
+				int userID = getUserIDFromSessionID(sessionID);
+				if(userID == -1)
+					return false;
+				
+				
+				java.sql.Statement statement;
+				boolean result = false;
+				String fav = "0";
+				if(newFavorite)
+				{
+					fav = "1";
+				}
+				
+				try
+				{
+					statement = connection.createStatement();
+					result = statement.execute("INSERT INTO favorites (userID, jokeID, favorit) VALUES ('" + userID + "','" + jokeID +"'," + fav + ");");
+				}
+				catch (Exception e) 
+				{
+					// TODO Auto-generated catch block
+					
+					
+					try
+					{
+						statement = connection.createStatement();
+						result = statement.execute("update favorites set favorit =" + fav + " where jokeID = " + jokeID + " and userID = " + userID);
+						return true;			
+					}
+					catch(Exception ex)
+					{
+						ex.printStackTrace();
+						return false;
+					}
+				}
+				return true;
 	}
-	
-	public static void unfavoritJoke(int jokeID, int userID)
-	{
-		java.sql.Statement statement;
-		boolean result;
 		
-		try
-		{
-			statement = connection.createStatement();
-			result = statement.execute("DELETE FROM favorites where userID = " + userID + " AND jokeID = " + jokeID);
-		}
-		catch (SQLException e) 
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
 	public static void rateComment(String username, int commentID, String rating)
 	{
 		

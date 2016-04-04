@@ -135,7 +135,11 @@ public class Client implements Runnable
 				 		String password = input.substring(40, 59);
 				 		password = password.trim();
 				 		System.out.println("REGISTRIEREN");
-				 		Datenbank.register(newUsername, password);
+				 		
+				 		Gson gson = new Gson();
+				 		
+				 		outWriter.println(gson.toJson(Datenbank.register(newUsername, password)));
+			 			outWriter.flush();
 				 		break;
 				 	}
 				 	case "REQUEST_CATEGRORIES":
@@ -195,30 +199,15 @@ public class Client implements Runnable
 				 		
 				 		break;
 				 	}
-				 	case "UNVOTE":
+				 	case "FAVORITE":
 				 	{
 				 		int jokeID = Integer.valueOf(input.substring(20,39).trim());
-				 		int userID = Integer.valueOf(input.substring(40,59).trim());
+				 		boolean newFavorite = input.substring(40,59).trim().equals("true");
+				 		String sessionID = input.substring(60);
+				 		Gson gson = new Gson();
 				 		
-				 		Datenbank.unrateJoke(userID, jokeID);
-				 		
-				 		break;
-				 	}
-				 	case "FAVORIT":
-				 	{
-				 		int jokeID = Integer.valueOf(input.substring(20,39).trim());
-				 		int userID = Integer.valueOf(input.substring(40,59).trim());
-				 		
-				 		Datenbank.favoritJoke(jokeID, userID);
-				 		
-				 		break;
-				 	}
-				 	case "UNFAVORIT":
-				 	{
-				 		int jokeID = Integer.valueOf(input.substring(20,39).trim());
-				 		int userID = Integer.valueOf(input.substring(40,59).trim());
-				 		
-				 		Datenbank.unfavoritJoke(jokeID, userID);
+				 		outWriter.println(gson.toJson(Datenbank.favoritJoke(jokeID, newFavorite, sessionID)));
+			 			outWriter.flush();
 				 		
 				 		break;
 				 	}
