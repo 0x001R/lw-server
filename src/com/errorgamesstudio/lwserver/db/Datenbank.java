@@ -280,21 +280,45 @@ public class Datenbank
 		
 	}
 	
-	public static void rateJoke(int userID, int jokeID)
+	public static boolean rateJoke(String sessionID, int jokeID, boolean newVote)
 	{
+		// First get userID from sessionID
+		int userID = getUserIDFromSessionID(sessionID);
+		if(userID == -1)
+			return false;
+		
+		
 		java.sql.Statement statement;
-		boolean result;
+		boolean result = false;
+		String voted = "0";
+		if(newVote)
+		{
+			voted = "1";
+		}
 		
 		try
 		{
 			statement = connection.createStatement();
-			result = statement.execute("INSERT INTO jokevotes (jokeID, userID) VALUES ('" + jokeID + "','" + userID +"');");
+			result = statement.execute("INSERT INTO jokevotes (jokeID, userID, voted) VALUES ('" + jokeID + "','" + userID +"'," + voted + ");");
 		}
-		catch (SQLException e) 
+		catch (Exception e) 
 		{
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			
+			try
+			{
+				statement = connection.createStatement();
+				result = statement.execute("update jokevotes set voted =" + voted + ", date=curdate() where jokeID = " + jokeID + " and userID = " + userID);
+				return true;			
+			}
+			catch(Exception ex)
+			{
+				ex.printStackTrace();
+				return false;
+			}
 		}
+		return true;
 	}
 	
 	public static void unrateJoke(int userID, int jokeID)
@@ -362,5 +386,32 @@ public class Datenbank
 	{
 		
 	}
-	
+
+	private static int getUserIDFromSessionID(String sessionID)
+	{
+		try
+		{
+			int userID = -1;
+			
+			// First geht userID from sessionID if sessionID is not null or ""
+			if(sessionID != null && !sessionID.equals(""))
+			{
+				Statement statement = connection.createStatement();
+				ResultSet result = statement.executeQuery("select idUser from user where sessionID = '" + sessionID + "'");
+				if(result.next())
+				{
+					userID = result.getInt(1);
+				}
+				else 
+					userID = -1;
+			}
+			return userID;
+		}
+		catch(Exception e)
+		{
+		
+			e.printStackTrace();
+		}
+		return -1;
+	}
 }

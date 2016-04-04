@@ -183,9 +183,15 @@ public class Client implements Runnable
 				 	case "VOTE":
 				 	{
 				 		int jokeID = Integer.valueOf(input.substring(20,39).trim());
-				 		int userID = Integer.valueOf(input.substring(40,59).trim());
+				 		String sNewVote = input.substring(40, 59).trim();
+				 		boolean newVote = sNewVote.equals("true");
+				 		String sessionID = input.substring(60);
 				 		
-				 		Datenbank.rateJoke(userID, jokeID);
+				 		Gson gson = new Gson();
+						
+						outWriter.println(gson.toJson(Datenbank.rateJoke(sessionID, jokeID, newVote)));
+			 			outWriter.flush();
+
 				 		
 				 		break;
 				 	}
