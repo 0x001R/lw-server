@@ -37,33 +37,7 @@ public class Joke  implements Serializable {
         this.favorit = favorit;
     }
 
-    public void addComment(String commentText, String username, int votes, Date date, int commentId)
-    {
-
-    }
-
-    public void addComment(Comment comment)
-    {
-        for(Comment c : comments)
-        {
-            if(c.getCommentId() != comment.getCommentId())
-            {
-                comments.add(comment);
-                break;
-            }
-        }
-    }
-
-    public void addCommentOnComment(Comment comment, int parentCommentId)
-    {
-        for (Comment c : comments)
-        {
-            if(c.addChildComment(comment))
-            {
-                return;
-            }
-        }
-    }
+    
 
     public int getJokeId()
     {

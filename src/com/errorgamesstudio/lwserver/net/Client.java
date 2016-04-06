@@ -133,13 +133,11 @@ public class Client implements Runnable
 				 		Datenbank.getJokes(category, auswahl, Integer.parseInt(firstJoke), Integer.parseInt(lastJoke));
 				 		break;
 				 	}
-				 	case "COMMENT": // parameter[1] == jokeID; username; parameter[2] == commentText
+				 	case "LOAD_COMMENTS": // parameter[1] == jokeID; username; parameter[2] == commentText
 				 	{
-				 		String jokeID = input.substring(20, 39);
-				 		jokeID = jokeID.trim();
-				 		String commentText = input.substring(40, 59);
-				 		commentText = commentText.trim();
-				 		Datenbank.postComment(Integer.parseInt(jokeID), username, commentText);
+				 		String jokeID = input.substring(20, 39).trim();
+				 		outWriter.println(new Gson().toJson(Datenbank.loadComments(jokeID)));
+				 		outWriter.flush();
 				 		break;
 				 	}
 				 	case "REGISTER":
@@ -224,6 +222,13 @@ public class Client implements Runnable
 			 			outWriter.flush();
 				 		
 				 		break;
+				 	}
+				 	case "LOAD_PROFILE_NAME":
+				 	{
+				 		String username = input.substring(20).trim();
+				 		outWriter.println(new Gson().toJson(Datenbank.getProfilebyUsername(username)));
+				 		outWriter.flush();
+				 		break;				 		
 				 	}
 				 	/*
 				 	}

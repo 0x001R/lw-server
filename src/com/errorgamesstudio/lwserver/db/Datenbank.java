@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import com.errorgamesstudio.lwserver.lw.Category;
+import com.errorgamesstudio.lwserver.lw.Comment;
 import com.errorgamesstudio.lwserver.lw.Joke;
+import com.errorgamesstudio.lwserver.lw.Profile;
 import com.errorgamesstudio.lwserver.lw.User;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -57,6 +59,61 @@ public class Datenbank
 		}
 		return null;
 		
+	}
+
+	public static Profile getProfilebyUsername(String username)
+	{
+		try
+		{
+			Statement statement = connection.createStatement();
+			ResultSet result = statement.executeQuery("SELECT idUser, Picturepath, profileText from user where Username = '" + username + "';");
+			if(result.next())
+			{
+				Profile temp = new Profile();
+				temp.userID = result.getInt(1);
+				temp.picturePath = result.getString(2);
+				temp.profilText = result.getString(3);
+				
+				return temp;
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		
+		return null;
+	}
+	
+	public static Comment[] loadComments(String jokeID)
+	{
+		try
+		{
+			Statement statement = connection.createStatement();
+			ResultSet result = statement.executeQuery("select * from comment where jokeID = " + jokeID + ";");
+			ArrayList<Comment> comments = new ArrayList<>();
+			while(result.next())
+			{
+				Comment temp = new Comment();
+				temp.commentID = result.getInt(1);
+				temp.userID = result.getInt(3);
+				temp.jokeID = result.getInt(2);
+				temp.commentText = result.getString(4);
+				temp.parent = result.getInt(6);
+				
+				comments.add(temp);
+			}
+			Comment[] tempArray = new Comment[comments.size()];
+			return comments.toArray(tempArray);
+		}
+		catch(Exception e)
+		{
+			
+		}
+		
+		
+		return null;
 	}
 	
 	public static String loadJokes(int categoryID, String order, int currentAmount, String sessionID)
