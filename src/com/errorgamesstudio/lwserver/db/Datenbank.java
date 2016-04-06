@@ -116,7 +116,7 @@ public class Datenbank
 				temp.date = result.getDate(7);
 				temp.username = result.getString(8);
 				// Not clean work. Hope I dont need next two somewhere else
-				temp.category = "";
+				temp.categoryID = -1;
 				temp.categoryType = -1;
 				//Shit above
 				
@@ -169,9 +169,22 @@ public class Datenbank
 		return null;
 	}
 	
-	public static boolean postNewJoke(String user, String jokeText)
+	public static boolean postNewJoke(String sessionID, Joke joke)
 	{
-		System.out.println(jokeText);
+		int userID = getUserIDFromSessionID(sessionID);
+		
+		try
+		{
+			Statement statement = connection.createStatement();
+			int temp = statement.executeUpdate("INSERT INTO jokes (userID, categoryID, jokeText) VALUES (" + userID + "," + joke.getCategoryID() + ",'" + joke.jokeText + "');");
+			return temp == 1;
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		
 		return false;
 	}
 	

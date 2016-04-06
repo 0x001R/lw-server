@@ -12,7 +12,7 @@ public class Joke  implements Serializable {
     public int votes;
     public Date date;
     public int hype;
-    public String category;
+    public int categoryID;
     public int categoryType;
     public ArrayList<Comment> comments;
     public boolean voted;
@@ -23,7 +23,7 @@ public class Joke  implements Serializable {
     	
     }
 
-    public Joke(int jokeId, String username, int votes, String jokeText, Date date, int hype, String category, int categoryType, boolean voted, boolean favorit)
+    public Joke(int jokeId, String username, int votes, String jokeText, Date date, int hype, int categoryID, int categoryType, boolean voted, boolean favorit)
     {
         this.jokeId = jokeId;
         this.username = username;
@@ -31,7 +31,7 @@ public class Joke  implements Serializable {
         this.jokeText  = jokeText;
         this.date = date;
         this.hype = hype;
-        this.category = category;
+        this.categoryID = categoryID;
         this.categoryType = categoryType;
         this.voted = voted;
         this.favorit = favorit;
@@ -90,8 +90,8 @@ public class Joke  implements Serializable {
         return hype;
     }
 
-    public String getCategory() {
-        return category;
+    public int getCategoryID() {
+        return categoryID;
     }
 
     public int getCategoryType() {

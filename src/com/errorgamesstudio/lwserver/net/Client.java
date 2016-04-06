@@ -12,8 +12,10 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
 import com.errorgamesstudio.lwserver.db.Datenbank;
+import com.errorgamesstudio.lwserver.lw.Joke;
 import com.errorgamesstudio.lwserver.lw.User;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class Client implements Runnable
 {
@@ -98,12 +100,24 @@ public class Client implements Runnable
 				 		break;
 				 	}	 	
 				 	
-				 	case "POST": // parameter[1] == Witz 
+				 	case "POST_NEW_JOKE": // parameter[1] == Witz 
 				 	{
-				 		String witz = input.substring(20);
-				 		witz.replace((char)255, (char)39);
-				 		witz = witz.trim();
-				 		Datenbank.postNewJoke(username, witz);
+				 		try
+				 		{
+				 			String sessionID = input.substring(20);
+					 		String tempIn = inReader.readLine();
+					 		
+							Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").create();
+
+							Joke joke = gson.fromJson(tempIn, Joke.class);
+							
+					 		outWriter.println(gson.toJson(Datenbank.postNewJoke(sessionID, joke)));
+					 		outWriter.flush();
+				 		}
+				 		catch (Exception ex)
+				 		{
+				 			
+				 		}
 				 		break;
 				 	}
 				 	case "DOWNLOAD": //parameter[1] == category; parameter[2] == parameter(Top/Beliebte etc); parameter[3] == first Joke; parameter[4] == last Joke
